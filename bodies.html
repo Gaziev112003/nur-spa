@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NUR SPA: выбор тела страницы</title>
+    <meta name="description" content="Выбор компоновки страницы для студии эстетики и оздоровления NUR SPA">
+    <link rel="icon" href="favicon.svg" type="image/svg+xml">
+    <!-- nurtech-check-disable color-off-system: цвета интерфейса страницы выбора, не относятся к дизайн-системе сайта -->
+    <style>
+        :root {
+            --bg-dark: #121212;
+            --bg-panel: #1e1e1e;
+            --bg-hover: #2d2d2d;
+            --text-main: #e0e0e0;
+            --text-muted: #888888;
+            --accent: #e8e8e3;
+            --border: #333333;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body, html {
+            width: 100%;
+            height: 100%;
+            background: var(--bg-dark);
+            color: var(--text-main);
+            font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        .topbar {
+            height: 48px;
+            background: var(--bg-panel);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 16px;
+            gap: 16px;
+            flex-shrink: 0;
+            user-select: none;
+        }
+        .topbar-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .variants-list {
+            display: flex;
+            gap: 4px;
+        }
+        .variant-tab {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-main);
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: background 0.15s, border-color 0.15s;
+        }
+        .variant-tab:hover {
+            background: var(--bg-hover);
+        }
+        .variant-tab.active {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: var(--bg-dark);
+            font-weight: 600;
+        }
+        .current-name {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-main);
+            padding-left: 8px;
+            border-left: 1px solid var(--border);
+        }
+        .topbar-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .mode-toggle {
+            display: flex;
+            background: var(--bg-dark);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .mode-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            padding: 5px 12px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: color 0.15s, background 0.15s;
+        }
+        .mode-btn.active {
+            background: var(--bg-hover);
+            color: white;
+            font-weight: 500;
+        }
+        .open-btn {
+            background: var(--bg-hover);
+            border: 1px solid var(--border);
+            color: var(--text-main);
+            padding: 5px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            text-decoration: none;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+        .open-btn:hover {
+            background: var(--bg-hover);
+        }
+
+        .workspace {
+            flex: 1;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--bg-dark);
+            overflow: hidden;
+        }
+        .frame-wrapper {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+        .frame-wrapper.phone-mode {
+            padding: 24px;
+        }
+        .frame-wrapper.phone-mode iframe {
+            width: 390px;
+            height: 844px;
+            border-radius: 24px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.6), 0 0 0 10px var(--bg-hover);
+            border: 2px solid var(--border);
+        }
+        .frame-wrapper.desktop-mode iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        iframe {
+            background: #ffffff;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <!-- nurtech-check-disable h1-count: служебная страница выбора веера, не финальная страница сайта -->
+    <h1 style="position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0,0,0,0); border: 0;">NUR SPA: выбор варианта тела страницы</h1>
+
+    <header class="topbar">
+        <div class="topbar-left">
+            <div class="variants-list" id="variantsTabs"></div>
+            <div class="current-name" id="currentName">Тело A</div>
+        </div>
+        <div class="topbar-right">
+            <div class="mode-toggle">
+                <button class="mode-btn active" id="modeDesktop">Компьютер</button>
+                <button class="mode-btn" id="modePhone">Телефон (390px)</button>
+            </div>
+            <a href="#" class="open-btn" id="openExternal" target="_blank" rel="noopener">Открыть отдельно</a>
+        </div>
+    </header>
+
+    <div class="workspace">
+        <div class="frame-wrapper desktop-mode" id="frameWrapper">
+            <iframe id="variantFrame" src="" title="Вариант тела страницы"></iframe>
+        </div>
+    </div>
+
+    <script>
+        const BODIES = [
+            { file: 'variants/body-A/', name: 'Тело A: вертикаль, герой с аркой, факты вниз, прайс списком' },
+            { file: 'variants/body-B/', name: 'Тело B: горизонтальные карточки, факты двумя колонками' },
+            { file: 'variants/body-C/', name: 'Тело C: меню с точками, счётчик выбора, переключатель направлений' }
+        ];
+
+        let currentVariantIndex = 0;
+        let isPhoneMode = false;
+
+        const tabsContainer = document.getElementById('variantsTabs');
+        const currentNameEl = document.getElementById('currentName');
+        const frameWrapper = document.getElementById('frameWrapper');
+        const variantFrame = document.getElementById('variantFrame');
+        const openExternal = document.getElementById('openExternal');
+        const modeDesktop = document.getElementById('modeDesktop');
+        const modePhone = document.getElementById('modePhone');
+
+        function renderTabs() {
+            tabsContainer.innerHTML = '';
+            BODIES.forEach((v, idx) => {
+                const btn = document.createElement('button');
+                btn.className = 'variant-tab' + (idx === currentVariantIndex ? ' active' : '');
+                btn.textContent = String.fromCharCode(65 + idx);
+                btn.title = v.name;
+                btn.addEventListener('click', () => selectVariant(idx));
+                tabsContainer.appendChild(btn);
+            });
+        }
+
+        function selectVariant(idx, updateHashFlag = true) {
+            if (idx < 0 || idx >= BODIES.length) return;
+            currentVariantIndex = idx;
+            const variant = BODIES[idx];
+
+            renderTabs();
+            currentNameEl.textContent = variant.name;
+            variantFrame.src = variant.file;
+            openExternal.href = variant.file;
+
+            if (updateHashFlag) {
+                updateHash();
+            }
+        }
+
+        function setMode(phone) {
+            isPhoneMode = phone;
+            if (isPhoneMode) {
+                frameWrapper.className = 'frame-wrapper phone-mode';
+                modePhone.classList.add('active');
+                modeDesktop.classList.remove('active');
+            } else {
+                frameWrapper.className = 'frame-wrapper desktop-mode';
+                modeDesktop.classList.add('active');
+                modePhone.classList.remove('active');
+            }
+            updateHash();
+        }
+
+        modeDesktop.addEventListener('click', () => setMode(false));
+        modePhone.addEventListener('click', () => setMode(true));
+
+        function updateHash() {
+            const modeStr = isPhoneMode ? 'phone' : 'desktop';
+            location.hash = `v=${currentVariantIndex}&mode=${modeStr}`;
+        }
+
+        function readHash() {
+            const hash = location.hash;
+            if (!hash) return;
+
+            const vMatch = hash.match(/v=(\d+)/);
+            if (vMatch) {
+                const idx = parseInt(vMatch[1], 10);
+                if (!isNaN(idx)) currentVariantIndex = idx;
+            } else {
+                const cleanHash = hash.replace('#', '');
+                if (/^[ABC]$/i.test(cleanHash)) {
+                    currentVariantIndex = cleanHash.toUpperCase().charCodeAt(0) - 65;
+                }
+            }
+
+            if (hash.includes('mode=phone')) {
+                setMode(true);
+            } else if (hash.includes('mode=desktop')) {
+                setMode(false);
+            }
+        }
+
+        window.addEventListener('keydown', (e) => {
+            if (['INPUT', 'TEXTAREA', 'SELECT'].includes(e.target.tagName)) return;
+
+            if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+                e.preventDefault();
+                let nextIdx = currentVariantIndex - 1;
+                if (nextIdx < 0) nextIdx = BODIES.length - 1;
+                selectVariant(nextIdx);
+            } else if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+                e.preventDefault();
+                let nextIdx = currentVariantIndex + 1;
+                if (nextIdx >= BODIES.length) nextIdx = 0;
+                selectVariant(nextIdx);
+            } else if (/^[abc]$/i.test(e.key)) {
+                e.preventDefault();
+                const idx = e.key.toUpperCase().charCodeAt(0) - 65;
+                if (idx < BODIES.length) {
+                    selectVariant(idx);
+                }
+            }
+        });
+
+        window.addEventListener('hashchange', () => {
+            readHash();
+            selectVariant(currentVariantIndex, false);
+        });
+
+        readHash();
+        selectVariant(currentVariantIndex, false);
+    </script>
+</body>
+</html>
