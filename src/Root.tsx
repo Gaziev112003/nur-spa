@@ -12,7 +12,7 @@ declare global {
 
 // /variants/N/ — черновики первого экрана; ?body=A|B|C — варианты тела на выбранной эстетике
 export function Root() {
-  const body = new URLSearchParams(location.search).get('body') ?? window.__BODY__
+  const body = new URLSearchParams(location.search).get('body') ?? window.__BODY__ ?? 'A'
   if (body === 'A') return <Body1 />
   if (body === 'B') return <Body2 />
   if (body === 'C') return <Body3 />
